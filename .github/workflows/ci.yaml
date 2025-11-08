@@ -6,6 +6,7 @@ on:
       - src/**
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   docker:
@@ -25,6 +26,8 @@ jobs:
       - name: Get Short SHA with git rev-parse
         id: get_short_sha_git
         run: echo "SHORT_SHA=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_OUTPUT
+      - name: Check Short SHA 
+        run: echo "${{SHORT_SHA}}"
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
