@@ -1,6 +1,6 @@
 # Enable HA for Redis
 redis:
-  enabled: false # Disable the default non-HA Redis
+  enabled: true # Disable the default non-HA Redis
 redis-ha: # Enable the HA Redis sub-chart
   enabled: false
 controller:
