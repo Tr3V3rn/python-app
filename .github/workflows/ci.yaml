@@ -20,12 +20,13 @@ jobs:
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Build and push
+      - name: Get Short SHA with git rev-parse
+        id: get_short_sha_git
+        run: echo "SHORT_SHA=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: trestianstewart/python-app:${{ github.sha }}
+          tags: trestianstewart/python-app:${{ env.SHORT_SHA  }}
