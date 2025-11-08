@@ -27,7 +27,7 @@ jobs:
         id: get_short_sha_git
         run: |
           echo "SHORT_SHA=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_OUTPUT
-          echo "${{ env.SHORT_SHA }}"
+          echo SHORT_SHA
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
