@@ -33,10 +33,16 @@ jobs:
         with:
           push: true
           tags: trestianstewart/python-app:${{ steps.get_short_sha_git.outputs.SHORT_SHA }}
+    outputs:
+      commit_id: ${{ steps.get_short_sha_git.outputs.SHORT_SHA }}
   cd:
     needs: ci
     runs-on: self-hosted
     steps:
+      - name: Update image tag
+        shell: bash
+        run: |
+          echo ${{needs.ci.outputs.commit_id}}
       - name: Download to ArgoCD CLI
         shell: bash
         run: |
