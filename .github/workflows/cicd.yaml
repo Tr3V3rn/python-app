@@ -39,10 +39,18 @@ jobs:
     needs: ci
     runs-on: self-hosted
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Update image tag
         shell: bash
         run: |
           echo ${{needs.ci.outputs.commit_id}}
+          pip install yq
+          yq -Yi '.image.tag = "${{needs.ci.outputs.commit_id}}"' charts/python-app/values.yaml
+      - name: Commit Changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'Update values.yaml with commit ${{needs.ci.outputs.commit_id}}'
       - name: Download to ArgoCD CLI
         shell: bash
         run: |
