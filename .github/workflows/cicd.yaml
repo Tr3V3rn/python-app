@@ -6,6 +6,7 @@ on:
       - src/**
     branches:
       - main
+      - develop
   workflow_dispatch:
 
 jobs:
@@ -35,9 +36,10 @@ jobs:
           tags: trestianstewart/python-app:${{ steps.get_short_sha_git.outputs.SHORT_SHA }}
     outputs:
       commit_id: ${{ steps.get_short_sha_git.outputs.SHORT_SHA }}
-  cd:
+  cd-staging:
     needs: ci
     runs-on: self-hosted
+    if: github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,7 +47,7 @@ jobs:
         shell: bash
         run: |
           echo ${{needs.ci.outputs.commit_id}}
-          sed -i "s/tag: \".*\"/tag: \"${{needs.ci.outputs.commit_id}}\"/" charts/python-app/values.yaml
+          sed -i "s/tag: \".*\"/tag: \"${{needs.ci.outputs.commit_id}}\"/" charts/python-app/values-staging.yaml
       - name: Commit Changes
         uses: EndBug/add-and-commit@v9
         with:
@@ -56,7 +58,7 @@ jobs:
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
-      - name: Authenticate to ArgoCD server
+      - name: Authenticate to ArgoCD server & Deploy to Staging
         shell: bash
         run: |
           argocd login argocd-server.argocd \
