@@ -13,14 +13,13 @@ def info():
     return jsonify({
     	'time': datetime.datetime.now().strftime("%I:%M:%S%p  on %B %d, %Y"),
     	'hostname': socket.gethostname(),
-        'message': 'ZGive God the glory,we will make it on Monday, son of God! <3',
+        'message': 'Hello jamF',
         'deployed_on': 'kubernetes'
     })
 
 @app.route('/api/v1/healthz')
 
 def health():
-	# Do an actual check here
     return jsonify({'status': 'up'}), 200
 
 if __name__ == '__main__':
