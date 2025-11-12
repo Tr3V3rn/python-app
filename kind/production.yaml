@@ -10,6 +10,13 @@
         nodeRegistration:
           kubeletExtraArgs:
             node-labels: "ingress-ready=true"
+      - |
+        kind: ClusterConfiguration
+        apiServer:
+          certSANs:
+          - "0.0.0.0"
+          - "127.0.0.1"
+          - "localhost"
       extraPortMappings:
       - containerPort: 80
         hostPort: 8080

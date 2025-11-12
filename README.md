@@ -20,9 +20,20 @@ kind create cluster --name staging --config kind/staging.yaml
 kind create cluster --name production --config kind/production.yaml
 ```
 Deploy an nginx ingress controller to each cluster
+
 ```
 kubectl apply -f kind/nginx-ingress-controller.yaml
 ```
+Add (external) production cluster to ArgoCD
+on the production cluster
+```
+kubectl config use-context kind-production
+kubectl apply -f clusterrolebinding.yaml
+kubectl apply -f secret.yaml
+kubectl apply -f serviceaccount.yaml
+
+kubectl config use-context kind-staging
+kubectl apply -f argocdsecret.yaml
 
 ### Installing
 

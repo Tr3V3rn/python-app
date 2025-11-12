@@ -67,3 +67,34 @@ jobs:
           --username admin \
           --password ${{ secrets.ARGOCD_PASSWORD }}
           argocd app sync python-app-staging
+  cd-production:
+    needs: ci
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Update image tag
+        shell: bash
+        run: |
+          echo ${{needs.ci.outputs.commit_id}}
+          sed -i "s/tag: \".*\"/tag: \"${{needs.ci.outputs.commit_id}}\"/" charts/python-app/values-production.yaml
+      - name: Commit Changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'Update values.yaml with commit ${{needs.ci.outputs.commit_id}}'
+      - name: Download to ArgoCD CLI
+        shell: bash
+        run: |
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
+      - name: Authenticate to ArgoCD server & Deploy to Production
+        shell: bash
+        run: |
+          argocd login argocd-server.argocd \
+          --insecure \
+          --grpc-web \
+          --username admin \
+          --password ${{ secrets.ARGOCD_PASSWORD }}
+          argocd app sync python-app-production
