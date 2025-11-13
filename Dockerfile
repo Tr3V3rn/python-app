@@ -1,7 +1,6 @@
 # Test stage
 FROM python:3.10-alpine AS test
 
-COPY zscalercertificate.crt  /etc/ssl/certs/
 
 WORKDIR /app
 
