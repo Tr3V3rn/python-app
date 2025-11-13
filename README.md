@@ -6,13 +6,20 @@ This code in this repo builds a simple 'hello jamf' python-app using Github acti
 
 An in-depth paragraph about your project and overview of use.
 
-This code in this repo builds a simple 'hello world' python-app using Github actions. We can deploy the app to one or many Kubernetes clusters if necessary. In this repo we have two Kind cluster deployment manifest (staging and production).
+This code in this repo builds a simple 'hello world' python-app using Github actions. We can deploy the app to one or many Kubernetes clusters if necessary. We can create two (2) Kind clusters using the staging and production manifests in the kind folder. An ingress is added to each cluster to allow external access.
+
+ArgoCD is installed onto each cluster using Helm charts. The values files are located in the charts/argocd folder. 
+
+I chose to install ArgoCD on both clusters separately due to networking issues between Kind clusters. Originally, I planned to run ArgoCD only on the staging cluster and manage the production cluster remotely using external cluster authentication. However, cross-cluster communication between Kind clusters proved VERY problematic, being on a Windows box using WSL doesn't help. The kind/ArgoExternalAuth folder contains the configurations I attempted for this single ArgoCD setup.
+
+The SonarQube Scan step in the ci job is commented out as I did not set up a SONAR Server but I have captured the coverage and unit tests report
 
 ### Prerequisites
 
 Install
 - Kind CLI using your favorite package manager
 - Docker Desktop or Rancher Desktop
+- Helm CLI
 
 Create staging and production k8s clusters
 ```
@@ -89,26 +96,13 @@ command to run if program contains helper info
 
 Contributors names and contact info
 
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
+Trestian Stewart
+[@DomPizzie](https://twitter.com/dompizzie)
 
-## Version History
 
-* 0.2
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]()
-* 0.1
-    * Initial Release
+## Resources Used
 
-## License
-
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
-
-## Acknowledgments
-
-Inspiration, code snippets, etc.
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
-* [dbader](https://github.com/dbader/readme-template)
-* [zenorocha](https://gist.github.com/zenorocha/4526327)
-* [fvcproductions](https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46)
+* [Writing Unit Test](https://docs.python.org/3/library/unittest.html)
+* [SonarQube Scan Action](https://github.com/SonarSource/sonarqube-scan-action)
+* [Python Generate test Reports](https://github.com/SonarSource/sonar-scanning-examples/tree/master/sonar-scanner/src/python)
+* [Argocd External Authentication](https://medium.com/pickme-engineering-blog/how-to-connect-an-external-kubernetes-cluster-to-argo-cd-using-bearer-token-authentication-d9ab093f081d)
