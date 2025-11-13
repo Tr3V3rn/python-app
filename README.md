@@ -53,34 +53,16 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 
 
-```
-kubectl config use-context kind-production
-kubectl apply -f kind/ArgoExternalAuth/production/serviceaccount.yaml
-kubectl apply -f kind/ArgoExternalAuth/production/clusterrolebinding.yaml
-kubectl apply -f kind/ArgoExternalAuth/production/secret.yaml
-```
-
-Obtain the Bearer Token and client certificate for authentication
-```
-kubectl -n kube-system get secret argocd -o yaml
-Follow the instructions below for updating the kind/ArgoExternalAuth/staging/argocdsecret.yaml
-https://medium.com/pickme-engineering-blog/how-to-connect-an-external-kubernetes-cluster-to-argo-cd-using-bearer-token-authentication-d9ab093f081d
-Apply the updated secret to the staging cluster
-kubectl apply -f 
-```
-
-kubectl config use-context kind-staging
-kubectl apply -f argocdsecret.yaml
 
 ### Installing
 
 * How/where to download your program
 * Any modifications needed to be made to files/folders
 
-### Executing program
+### Accessing the application
 
 * How to run the program
-* Step-by-step bullets
+* 
 ```
 code blocks for commands
 ```
