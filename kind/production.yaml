@@ -1,19 +1,37 @@
-    kind: Cluster
-    apiVersion: kind.x-k8s.io/v1alpha4
-    networking:
-      disableDefaultCNI: false
-    nodes:
-    - role: control-plane
-      kubeadmConfigPatches:
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  disableDefaultCNI: false
+  apiServerAddress: "0.0.0.0"
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
       - |
         kind: InitConfiguration
         nodeRegistration:
           kubeletExtraArgs:
             node-labels: "ingress-ready=true"
-      extraPortMappings:
+    extraPortMappings:
       - containerPort: 80
         hostPort: 8080
         protocol: TCP
       - containerPort: 443
         hostPort: 8443
         protocol: TCP
+kubeadmConfigPatchesJSON6902:
+- group: kubeadm.k8s.io
+  version: v1beta3
+  kind: ClusterConfiguration
+  patch: |
+    - op: add
+      path: /apiServer/certSANs/-
+      value: 127.0.0.1
+    - op: add
+      path: /apiServer/certSANs/-
+      value: 0.0.0.0
+    - op: add
+      path: /apiServer/certSANs/-
+      value: localhost
+    - op: add
+      path: /apiServer/certSANs/-
+      value: kubernetes
