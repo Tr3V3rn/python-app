@@ -29,6 +29,12 @@ jobs:
         run: |
           echo "SHORT_SHA=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_OUTPUT
           echo $SHORT_SHA
+      - name: Run tests and extract reports
+        run: |
+          docker build --target test -t python-app-test .
+          docker create --name temp-container python-app-test
+          docker cp temp-container:/app/coverage-report ./coverage-report
+          docker rm temp-container
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
