@@ -20,6 +20,7 @@ Install
 - Kind CLI using your favorite package manager
 - Docker Desktop or Rancher Desktop
 - Helm CLI
+- curl
 
 Create staging and production k8s clusters
 ```
@@ -43,6 +44,29 @@ Update your local host file
 Access the ArgoCD UI from https://argocd.production.local:8443/
 ```
 
+Create an app in the production environment
+```
+argocd app create python-app-production \
+  --repo https://github.com/Tr3V3rn/python-app.git \
+  --path charts/python-app \
+  --revision main \
+  --dest-server https://kubernetes.default.svc \
+  --dest-namespace production \
+  --values values-production.yaml \
+  --sync-option CreateNamespace=true
+```
+Create an app in the staging environment
+```
+argocd app create python-app-production \
+  --repo https://github.com/Tr3V3rn/python-app.git \
+  --path charts/python-app \
+  --revision develop \
+  --dest-server https://kubernetes.default.svc \
+  --dest-namespace staging \
+  --values values.yaml \
+  --sync-option CreateNamespace=true
+```
+
 Get ArgoCD admin password
 ```
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
@@ -61,10 +85,10 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 ### Accessing the application
 
-* How to run the program
-* 
+* How to acces the application
 ```
-code blocks for commands
+curl http://myapp.example.com/api/v1/info (staging)
+curl http://myapp.example.com:8080/api/v1/info (production)
 ```
 
 ## Help
