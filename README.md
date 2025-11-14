@@ -48,7 +48,7 @@ Access the Production ArgoCD UI from https://argocd.production.local:8443/
 Access the Staging ArgoCD UI from https://argocd.staging.local:/
 ```
 
-Create an app in the production environment
+Create an app in the production environment either via UI or CLU
 ```
 argocd app create python-app-production \
   --repo https://github.com/Tr3V3rn/python-app.git \
@@ -59,7 +59,7 @@ argocd app create python-app-production \
   --values values-production.yaml \
   --sync-option CreateNamespace=true
 ```
-Create an app in the staging environment
+Create an app in the staging environment via UI or CLU
 ```
 argocd app create python-app-production \
   --repo https://github.com/Tr3V3rn/python-app.git \
@@ -67,7 +67,7 @@ argocd app create python-app-production \
   --revision develop \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace staging \
-  --values values.yaml \
+  --values values-staging.yaml \
   --sync-option CreateNamespace=true
 ```
 
@@ -76,11 +76,12 @@ Get ArgoCD admin password
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
-Use self-hosted runners to avoid exposing Kubernetes API endpoints publicly
+Use self-hosted runners for each cluster to avoid exposing Kubernetes API endpoints publicly
 ```
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.yaml
 
 Generate a Personal Access Token (PAT) for ARC to authenticate with GitHub.
+Select **repo ** scope for the access
 
 helm repo add actions-runner-controller https://actions-runner-controller.github.io/actions-runner-controller
 
@@ -89,9 +90,10 @@ helm upgrade --install --namespace actions-runner-system --create-namespace\
   --set=authSecret.github_token="REPLACE_YOUR_PAT_HERE"\
   --wait actions-runner-controller actions-runner-controller/actions-runner-controller
 
-kubectl apply -f kind/runnerdeployment.yaml
+kubectl apply -f kind/prodrunnerdeployment.yaml (on production cluster)
+kubectl apply -f kind/stagingrunnerdeployment.yaml (on staging cluster)
 
-Verify you see the self hosted runner in GitHub under Actions
+Verify you see the self-hosted runners in GitHub UI under Actions
 ```
 
 
@@ -104,10 +106,14 @@ Verify you see the self hosted runner in GitHub under Actions
 
 ### Accessing the application
 
-* How to acces the application
+* How to access the Python application from the browser or CLI
 ```
-curl http://myapp.example.com/api/v1/info (staging)
-curl http://myapp.example.com:8080/api/v1/info (production)
+Add the entries to your host file
+127.0.0.1 jamf.production.local
+127.0.0.1 jamf.staging.local
+
+curl http://jamf.staging.local/api/v1/info (staging)
+curl http://jamf.production.local:8080/api/v1/info (production)
 ```
 
 ## Help
@@ -122,7 +128,7 @@ command to run if program contains helper info
 Contributors names and contact info
 
 Trestian Stewart
-[@DomPizzie](https://twitter.com/dompizzie)
+[email me](trestian.stewart@gmail.com)
 
 
 ## Resources Used
