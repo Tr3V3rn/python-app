@@ -8,7 +8,7 @@ An in-depth paragraph about your project and overview of use.
 
 This code in this repo builds a simple 'hello world' python-app using Github actions. We can deploy the app to one or many Kubernetes clusters if necessary. We can create two (2) Kind clusters using the staging and production manifests in the kind folder. An ingress is added to each cluster to allow external access. We will also use self hosted runners for deploying applications to k8s clusters. The CICD pipeline can target either the production or staging cluster.
 
-ArgoCD is installed onto each cluster using Helm charts. The values files are located in the charts/argocd folder. 
+ArgoCD is installed onto each cluster using Helm charts. The respective values files are located in the charts/argocd folder. 
 
 I chose to install ArgoCD on both clusters separately due to networking issues between Kind clusters. Originally, I planned to run ArgoCD only on the staging cluster and manage the production cluster remotely using external cluster authentication. However, cross-cluster communication between Kind clusters proved VERY problematic, being on a Windows box using WSL doesn't help. The kind/ArgoExternalAuth folder contains the configurations I attempted for this single ArgoCD setup.
 
@@ -35,13 +35,17 @@ kubectl apply -f kind/nginx-ingress-controller.yaml
 ```
 
 
-Deploy ArgoCD onto the k8s clusters (staging and prod)
+Deploy ArgoCD application onto the k8s clusters (staging & prod)
 ```
 helm repo add argo https://argoproj.github.io/argo-helm
 helm upgrade --install argocd argo/argo-cd -n argocd --create-namespace -f charts/argocd/<environment>-values.yaml
+
 Update your local host file
 127.0.0.1 argocd.production.local
-Access the ArgoCD UI from https://argocd.production.local:8443/
+127.0.0.1 argocd.staging.local
+
+Access the Production ArgoCD UI from https://argocd.production.local:8443/
+Access the Staging ArgoCD UI from https://argocd.staging.local:/
 ```
 
 Create an app in the production environment

@@ -88,7 +88,7 @@ jobs:
           argocd app sync python-app-staging
   cd-production:
     needs: ci
-    runs-on: self-hosted
+    runs-on: production
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
@@ -111,7 +111,7 @@ jobs:
       - name: Authenticate to ArgoCD server & Deploy to Production
         shell: bash
         run: |
-          argocd login argocd.production.local:443 \
+          argocd login argocd-server.argocd \
           --insecure \
           --grpc-web \
           --username admin \

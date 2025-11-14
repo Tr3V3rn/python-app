@@ -10,7 +10,7 @@ repoServer:
 applicationSet:
   replicas: 1
 global:
-  domain: argocd.example.com
+  domain: argocd.staging.local
 certificate:
   enabled: true
 server:
