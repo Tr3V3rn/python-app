@@ -35,13 +35,17 @@ kubectl apply -f kind/nginx-ingress-controller.yaml
 ```
 
 
-Deploy ArgoCD onto the k8s clusters (staging and prod)
+Deploy ArgoCD application onto the k8s clusters (staging & prod)
 ```
 helm repo add argo https://argoproj.github.io/argo-helm
 helm upgrade --install argocd argo/argo-cd -n argocd --create-namespace -f charts/argocd/<environment>-values.yaml
+
 Update your local host file
 127.0.0.1 argocd.production.local
-Access the ArgoCD UI from https://argocd.production.local:8443/
+127.0.0.1 argocd.staging.local
+
+Access the Production ArgoCD UI from https://argocd.production.local:8443/
+Access the Staging ArgoCD UI from https://argocd.staging.local:/
 ```
 
 Create an app in the production environment
