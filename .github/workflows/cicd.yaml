@@ -108,12 +108,12 @@ jobs:
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
-      # - name: Authenticate to ArgoCD server & Deploy to Production
-      #   shell: bash
-      #   run: |
-      #     argocd login argocd.production.local:443 \
-      #     --insecure \
-      #     --grpc-web \
-      #     --username admin \
-      #     --password ${{ secrets.ARGOCD_PROD_PASSWORD }}
-      #     argocd app sync python-app-production
+      - name: Authenticate to ArgoCD server & Deploy to Production
+        shell: bash
+        run: |
+          argocd login argocd-server.argocd \
+          --insecure \
+          --grpc-web \
+          --username admin \
+          --password ${{ secrets.ARGOCD_PROD_PASSWORD }}
+          argocd app sync python-app-production
