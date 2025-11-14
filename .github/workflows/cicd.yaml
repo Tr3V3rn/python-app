@@ -111,7 +111,7 @@ jobs:
       - name: Authenticate to ArgoCD server & Deploy to Production
         shell: bash
         run: |
-          argocd login argocd-server.argocd \
+          argocd login argocd.production.local:443 \
           --insecure \
           --grpc-web \
           --username admin \
