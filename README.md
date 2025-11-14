@@ -72,8 +72,23 @@ Get ArgoCD admin password
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
+Use self-hosted runners to avoid exposing Kubernetes API endpoints publicly
+```
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.yaml
 
+Generate a Personal Access Token (PAT) for ARC to authenticate with GitHub.
 
+helm repo add actions-runner-controller https://actions-runner-controller.github.io/actions-runner-controller
+
+helm upgrade --install --namespace actions-runner-system --create-namespace\
+  --set=authSecret.create=true\
+  --set=authSecret.github_token="REPLACE_YOUR_PAT_HERE"\
+  --wait actions-runner-controller actions-runner-controller/actions-runner-controller
+
+kubectl apply -f kind/runnerdeployment.yaml
+
+Verify you see the self hosted runner in GitHub under Actions
+```
 
 
 
@@ -107,7 +122,7 @@ Trestian Stewart
 
 
 ## Resources Used
-
+* [GitHub Self-hosted runners](https://github.com/actions/actions-runner-controller/blob/master/docs/quickstart.md)
 * [Writing Unit Test](https://docs.python.org/3/library/unittest.html)
 * [SonarQube Scan Action](https://github.com/SonarSource/sonarqube-scan-action)
 * [Python Generate test Reports](https://github.com/SonarSource/sonar-scanning-examples/tree/master/sonar-scanner/src/python)
