@@ -14,41 +14,45 @@ I chose to install ArgoCD on both clusters separately due to networking issues b
 
 The SonarQube Scan step in the ci job is commented out as I did not set up a SONAR Server but I  captured the coverage and unit tests report
 
-### Prerequisites
+### Installation
 
-Install
-- Kind CLI using your favorite package manager
-- Docker Desktop or Rancher Desktop
-- Helm CLI
-- curl
+Pre-Requisities
+- kind CLI 
+- kubectl CLI
+- git CLI
+- helm CLI
+- curl CLI
+- Docker/Rancher Desktop
+- VsCode IDE
+- Docker Hub account
 
-Create staging and production k8s clusters
+Create staging and production Kind clusters
 ```
-kind create cluster --name staging --config kind/staging.yaml
-kind create cluster --name production --config kind/production.yaml
+kind create cluster --name staging --config kind/createcluster/staging.yaml
+kind create cluster --name production --config kind/createcluster/production.yaml
 ```
-Deploy an nginx ingress controller to each cluster (production,staging)
+Deploy an nginx ingress controller onto each Kind clusters
 
 ```
 kubectl config use-context kind-<environment>
-kubectl apply -f kind/nginx-ingress-controller.yaml
+kubectl apply -f kind/controllers/nginx-ingress-controller.yaml
 ```
 
 
-Deploy ArgoCD application onto the k8s clusters (staging & prod)
+Deploy ArgoCD application onto each Kind clusters
 ```
 helm repo add argo https://argoproj.github.io/argo-helm
-helm upgrade --install argocd argo/argo-cd -n argocd --create-namespace -f charts/argocd/<environment>-values.yaml
+helm upgrade --install argocd argo/argo-cd -n argocd --version 9.1.0 --create-namespace -f charts/argocd/<environment>-values.yaml
 
 Update your local host file
 127.0.0.1 argocd.production.local
 127.0.0.1 argocd.staging.local
 
 Access the Production ArgoCD UI from https://argocd.production.local:8443/
-Access the Staging ArgoCD UI from https://argocd.staging.local:/
+Access the Staging ArgoCD UI from https://argocd.staging.local/
 ```
 
-Create an app in the production environment either via UI or CLU
+Create an ArgoCD app in the production environment via UI or CLI
 ```
 argocd app create python-app-production \
   --repo https://github.com/Tr3V3rn/python-app.git \
@@ -59,7 +63,7 @@ argocd app create python-app-production \
   --values values-production.yaml \
   --sync-option CreateNamespace=true
 ```
-Create an app in the staging environment via UI or CLU
+Create an ArgoCD app in the staging environment via UI or CLI
 ```
 argocd app create python-app-production \
   --repo https://github.com/Tr3V3rn/python-app.git \
@@ -71,7 +75,7 @@ argocd app create python-app-production \
   --sync-option CreateNamespace=true
 ```
 
-Get ArgoCD admin password
+Get the ArgoCD admin password
 ```
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
@@ -88,25 +92,26 @@ helm repo add actions-runner-controller https://actions-runner-controller.github
 helm upgrade --install --namespace actions-runner-system --create-namespace\
   --set=authSecret.create=true\
   --set=authSecret.github_token="REPLACE_YOUR_PAT_HERE"\
-  --wait actions-runner-controller actions-runner-controller/actions-runner-controller
+  --wait actions-runner-controller actions-runner-controller/actions-runner-controller --version 0.23.7
 
-kubectl apply -f kind/prodrunnerdeployment.yaml (on production cluster)
-kubectl apply -f kind/stagingrunnerdeployment.yaml (on staging cluster)
+kubectl apply -f kind/resources/prodrunnerdeployment.yaml (on production cluster)
+kubectl apply -f kind/resources/stagingrunnerdeployment.yaml (on staging cluster)
 
-Verify you see the self-hosted runners in GitHub UI under Actions
+Verify the self-hosted runners appear in GitHub UI under Actions
 ```
+Add Repository Secrets to Github Actions
+```
+create secret with name ARGOCD_PROD_PASSWORD and add the ArgoCD admin password recorded earlier from the production cluster
 
+create secret with name ARGOCD_PASSWORD and add the ArgoCD admin password recorded earlier from the staging cluster
 
-
-
-### Installing
-
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+create secret with name DOCKERHUB_USERNAME, add your docker hub username
+create secret with name DOCKERHUB_TOKEN, add your docker hub token
+```
 
 ### Accessing the application
 
-* How to access the Python application from the browser or CLI
+* Access the Python application from the browser or CLI
 ```
 Add the entries to your host file
 127.0.0.1 jamf.production.local
@@ -114,13 +119,21 @@ Add the entries to your host file
 
 curl http://jamf.staging.local/api/v1/info (staging)
 curl http://jamf.production.local:8080/api/v1/info (production)
+
+Sample expected output:
+{
+  "deployed_on": "kubernetes",
+  "hostname": "python-app-staging-7fb97cb4d-kmjhm",
+  "message": "Hello jamFStagingBaby",
+  "time": "05:20:16PM  on November 14, 2025"
+}
+
 ```
 
 ## Help
 
-Any advise for common problems or issues.
 ```
-command to run if program contains helper info
+If things do not work as expected PRESS & HOLDthe Power button for 3 seconds!
 ```
 
 ## Authors
