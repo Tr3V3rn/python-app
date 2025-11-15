@@ -59,7 +59,7 @@ kind create cluster --name staging --config kind/createcluster/staging.yaml
 kind create cluster --name production --config kind/createcluster/production.yaml
 ```
 Docker container running k8s
-![KIND](./images/kindcontainers.png)
+![KIND](./.images/kindcontainers.png)
 
 Deploy an nginx ingress controller onto each Kind clusters
 
@@ -113,7 +113,7 @@ argocd app create python-app-staging \
   --sync-option CreateNamespace=true
 ```
 Application running in ArgoCD
-![ArgoCD application](./images/argocdappprod.png)
+![ArgoCD application](./.images/argocdappprod.png)
 
 Use self-hosted runners for each cluster to connect to kube API server privately
 ```
@@ -135,7 +135,7 @@ kubectl apply -f kind/resources/stagingrunnerdeployment.yaml (on staging cluster
 
 ```
 Verify the self-hosted runners appear in GitHub UI under Actions
-![Self-Hosted Runners](./images/githubrunners.png)
+![Self-Hosted Runners](./.images/githubrunners.png)
 
 Add Repository Secrets to Github Actions
 ```
@@ -147,7 +147,7 @@ create secret with name DOCKERHUB_USERNAME, add your docker hub username
 create secret with name DOCKERHUB_TOKEN, add your docker hub token
 ```
 Verify the secrets are created in the repo
-![Repository Secrets](./images/githubsecrets.png)
+![Repository Secrets](./.images/githubsecrets.png)
 
 ### Accessing the application
 
@@ -171,7 +171,7 @@ Sample expected output:
 ```
 Access the application via the browser
 
-![JamF Application Prod](./images/appprod.png)
+![JamF Application Prod](./.images/appprod.png)
 
 
 ## Authors
