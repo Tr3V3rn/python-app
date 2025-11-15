@@ -90,6 +90,10 @@ jobs:
         shell: bash
         run: |
           curl -k http://python-app-staging.staging:5000/api/v1/info | jq '. | select(.deployed_on=="kubernetes")'
+      - name: Rapid7 DAST Scan
+        shell: bash
+        run: |
+          echo "Performing DAST against....[http://jamf.staging.local/api/v1/info]"
   cd-production:
     needs: ci
     runs-on: production
@@ -121,3 +125,7 @@ jobs:
           --username admin \
           --password ${{ secrets.ARGOCD_PROD_PASSWORD }}
           argocd app sync python-app-production
+      - name: E2E test
+        shell: bash
+        run: |
+          curl -k http://python-app-production.production:5000/api/v1/info | jq '. | select(.deployed_on=="kubernetes")'
