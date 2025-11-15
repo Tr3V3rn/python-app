@@ -86,6 +86,10 @@ jobs:
           --username admin \
           --password ${{ secrets.ARGOCD_PASSWORD }}
           argocd app sync python-app-staging
+      - name: Download curl CLI
+        shell: bash
+        run: |
+          sudo apt install curl -y
   cd-production:
     needs: ci
     runs-on: production
