@@ -32,7 +32,7 @@ The pipeline includes steps for simulating E2E testing by calling the applicatio
 
 This implementation uses local Kind clusters with manual infrastructure provisioning via Helm charts. A production-ready continuous infrastructure deployment would require:
 
-- Cloud provider integration (AWS, Azure, GCP)
+- Cloud provider integration (AWS)
 - Infrastructure as Code tooling (Terraform, CloudFormation)
 - Automated infrastructure change detection and deployment workflows
 
@@ -125,7 +125,7 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 
 Generate a Personal Access Token (PAT) for ARC to authenticate with GitHub.
 Developer Settings -> Tokens (Classic) -> Generate New Token
-Select **repo ** scope for the access
+Select **repo** scope for the access
 
 helm repo add actions-runner-controller https://actions-runner-controller.github.io/actions-runner-controller
 
