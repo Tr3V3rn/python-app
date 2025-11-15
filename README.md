@@ -24,6 +24,7 @@ The `kind/ArgoExternalAuth` directory contains the attempted configuration for e
 ## Quality Assurance
 
 The pipeline includes provisions for SonarQube static code analysis (currently disabled due to server unavailability) and captures unit test coverage reports for quality metrics.
+The pipeline also include provisions for simulating E2E testing by calling the application API to verify returned information is accurate.
 
 ## Infrastructure Limitations
 

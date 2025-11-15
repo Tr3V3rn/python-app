@@ -86,10 +86,10 @@ jobs:
           --username admin \
           --password ${{ secrets.ARGOCD_PASSWORD }}
           argocd app sync python-app-staging
-      - name: Install jq CLI
+      - name: E2E test
         shell: bash
         run: |
-          sudo apt-get install jq
+          curl -k http://python-app-staging.staging:5000/api/v1/info | jq '. | select(.deployed_on=="kubernetes")'
   cd-production:
     needs: ci
     runs-on: production
