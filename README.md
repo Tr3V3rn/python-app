@@ -51,6 +51,7 @@ Pre-Requisities
 - Docker/Rancher Desktop
 - VsCode IDE
 - Docker Hub account
+- GitHub account
 
 Clone the git repository
 ```
