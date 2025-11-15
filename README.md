@@ -26,8 +26,7 @@ The `kind/ArgoExternalAuth` directory contains the attempted configuration for e
 The pipeline includes provisions for SonarQube static code analysis (currently disabled due to server unavailability) and captures unit test coverage reports for quality metrics.
 
 ## Post-Deployment
-The pipeline include provisions for simulating E2E testing by calling the application API verifying the returned information is accurate.
-The pipeline include provisions for simulating DAST by calling Rapid7 Scanning Endpoint
+The pipeline includes steps for simulating E2E testing by calling the application API verifying the returned information is accurate as well as a step for simulating Dynamic Application Securty Testing (DAST) with Rapid7.
 
 ## Infrastructure Limitations
 
