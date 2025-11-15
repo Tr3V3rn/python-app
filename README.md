@@ -25,6 +25,10 @@ The `kind/ArgoExternalAuth` directory contains the attempted configuration for e
 
 The pipeline includes provisions for SonarQube static code analysis (currently disabled due to server unavailability) and captures unit test coverage reports for quality metrics.
 
+## Post-Deployment
+The pipeline include provisions for simulating E2E testing by calling the application API verifying the returned information is accurate.
+The pipeline include provisions for simulating DAST by calling Rapid7 Scanning Endpoint
+
 ## Infrastructure Limitations
 
 This implementation uses local Kind clusters with manual infrastructure provisioning via Helm charts. A production-ready continuous infrastructure deployment would require:
@@ -47,6 +51,7 @@ Pre-Requisities
 - Docker/Rancher Desktop
 - VsCode IDE
 - Docker Hub account
+- GitHub account
 
 Clone the git repository
 ```
