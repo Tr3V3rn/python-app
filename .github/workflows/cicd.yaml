@@ -71,7 +71,7 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           message: 'Update values.yaml with commit ${{needs.ci.outputs.commit_id}}'
-      - name: Download to ArgoCD CLI
+      - name: Install ArgoCD CLI
         shell: bash
         run: |
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
@@ -86,10 +86,10 @@ jobs:
           --username admin \
           --password ${{ secrets.ARGOCD_PASSWORD }}
           argocd app sync python-app-staging
-      - name: Download curl CLI
+      - name: Install jq CLI
         shell: bash
         run: |
-          sudo apt install curl -y
+          sudo apt-get install jq
   cd-production:
     needs: ci
     runs-on: production
