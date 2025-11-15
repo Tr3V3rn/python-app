@@ -8,3 +8,5 @@ spec:
   template:
     spec:
       repository: Tr3V3rn/python-app
+      labels:
+        - staging
