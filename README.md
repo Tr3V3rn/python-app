@@ -1,20 +1,42 @@
-# Project Title
+# Kubernetes CI/CD Pipeline with GitOps Deployment using ArgoCD
 
-This code in this repo builds a simple 'hello jamf' python-app using Github actions to two (2) Kubernetes clusters (staging and production)
+## Architecture Overview
 
-## Description
+The deployment architecture utilizes two local Kind clusters representing staging and production environments. Each cluster includes:
 
-An in-depth paragraph about your project and overview of use.
+- NGINX ingress controllers for external traffic routing
+- ArgoCD for GitOps-based application deployment
+- Self-hosted GitHub Actions runners for CI/CD execution
 
-This code in this repo builds a simple 'hello world' python-app using Github actions. We can deploy the app to one or many Kubernetes clusters if necessary. We can create two (2) Kind clusters using the staging and production manifests in the kind folder. An ingress is added to each cluster to allow external access. We will also use self hosted runners for deploying applications to k8s clusters. The CICD pipeline can target either the production or staging cluster.
+## Deployment Strategy
 
-ArgoCD is installed onto each cluster using Helm charts. The respective values files are located in the charts/argocd folder. 
+The CI/CD pipeline implements environment-specific deployment workflows:
 
-I chose to install ArgoCD on both clusters separately due to networking issues between Kind clusters. Originally, I planned to run ArgoCD only on the staging cluster and manage the production cluster remotely using external cluster authentication. However, cross-cluster communication between Kind clusters proved VERY problematic, being on a Windows box using WSL doesn't help. The kind/ArgoExternalAuth folder contains the configurations I attempted for this single ArgoCD setup.
+- `develop` branch commits trigger deployments to the staging cluster
+- `main` branch commits trigger deployments to the production cluster
 
-The SonarQube Scan step in the ci job is commented out as I did not set up a SONAR Server but I  captured the coverage and unit tests report
+## ArgoCD Configuration
 
-### Installation
+ArgoCD is deployed independently on each cluster using Helm charts with environment-specific value files located in `charts/argocd/`. This approach was selected over a centralized ArgoCD instance due to networking limitations inherent in Kind's Docker-based cluster implementation, particularly when running on Windows with WSL2.
+
+The `kind/ArgoExternalAuth` directory contains the attempted configuration for external cluster management, which was abandoned due to cross-cluster connectivity constraints.
+
+## Quality Assurance
+
+The pipeline includes provisions for SonarQube static code analysis (currently disabled due to server unavailability) and captures unit test coverage reports for quality metrics.
+
+## Infrastructure Limitations
+
+This implementation uses local Kind clusters with manual infrastructure provisioning via Helm charts. A production-ready continuous infrastructure deployment would require:
+
+- Cloud provider integration (AWS, Azure, GCP)
+- Infrastructure as Code tooling (Terraform, CloudFormation)
+- Automated infrastructure change detection and deployment workflows
+
+The current setup demonstrates application deployment patterns while operating within local development constraints.
+
+
+## Installation
 
 Pre-Requisities
 - kind CLI 
@@ -26,18 +48,25 @@ Pre-Requisities
 - VsCode IDE
 - Docker Hub account
 
+Clone the git repository
+```
+git clone https://github.com/Tr3V3rn/python-app.git
+```
+
 Create staging and production Kind clusters
 ```
 kind create cluster --name staging --config kind/createcluster/staging.yaml
 kind create cluster --name production --config kind/createcluster/production.yaml
 ```
+Docker container running k8s
+![KIND](./images/kindcontainers.png)
+
 Deploy an nginx ingress controller onto each Kind clusters
 
 ```
 kubectl config use-context kind-<environment>
 kubectl apply -f kind/controllers/nginx-ingress-controller.yaml
 ```
-
 
 Deploy ArgoCD application onto each Kind clusters
 ```
@@ -52,8 +81,15 @@ Access the Production ArgoCD UI from https://argocd.production.local:8443/
 Access the Staging ArgoCD UI from https://argocd.staging.local/
 ```
 
+Get the ArgoCD admin password
+```
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
 Create an ArgoCD app in the production environment via UI or CLI
 ```
+argocd login argocd.production.local:8443 --insecure --grpc-web --username admin --password <password>
+
 argocd app create python-app-production \
   --repo https://github.com/Tr3V3rn/python-app.git \
   --path charts/python-app \
@@ -65,7 +101,9 @@ argocd app create python-app-production \
 ```
 Create an ArgoCD app in the staging environment via UI or CLI
 ```
-argocd app create python-app-production \
+argocd login argocd.staging.local --insecure --grpc-web --username admin --password <password>
+
+argocd app create python-app-staging \
   --repo https://github.com/Tr3V3rn/python-app.git \
   --path charts/python-app \
   --revision develop \
@@ -74,17 +112,15 @@ argocd app create python-app-production \
   --values values-staging.yaml \
   --sync-option CreateNamespace=true
 ```
+Application running in ArgoCD
+![ArgoCD application](./images/argocdappprod.png)
 
-Get the ArgoCD admin password
-```
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
-Use self-hosted runners for each cluster to avoid exposing Kubernetes API endpoints publicly
+Use self-hosted runners for each cluster to connect to kube API server privately
 ```
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.yaml
 
 Generate a Personal Access Token (PAT) for ARC to authenticate with GitHub.
+Developer Settings -> Tokens (Classic) -> Generate New Token
 Select **repo ** scope for the access
 
 helm repo add actions-runner-controller https://actions-runner-controller.github.io/actions-runner-controller
@@ -97,8 +133,10 @@ helm upgrade --install --namespace actions-runner-system --create-namespace\
 kubectl apply -f kind/resources/prodrunnerdeployment.yaml (on production cluster)
 kubectl apply -f kind/resources/stagingrunnerdeployment.yaml (on staging cluster)
 
-Verify the self-hosted runners appear in GitHub UI under Actions
 ```
+Verify the self-hosted runners appear in GitHub UI under Actions
+![Self-Hosted Runners](./images/githubrunners.png)
+
 Add Repository Secrets to Github Actions
 ```
 create secret with name ARGOCD_PROD_PASSWORD and add the ArgoCD admin password recorded earlier from the production cluster
@@ -108,6 +146,8 @@ create secret with name ARGOCD_PASSWORD and add the ArgoCD admin password record
 create secret with name DOCKERHUB_USERNAME, add your docker hub username
 create secret with name DOCKERHUB_TOKEN, add your docker hub token
 ```
+Verify the secrets are created in the repo
+![Repository Secrets](./images/githubsecrets.png)
 
 ### Accessing the application
 
@@ -129,16 +169,12 @@ Sample expected output:
 }
 
 ```
+Access the application via the browser
 
-## Help
+![JamF Application Prod](./images/appprod.png)
 
-```
-If things do not work as expected PRESS & HOLDthe Power button for 3 seconds!
-```
 
 ## Authors
-
-Contributors names and contact info
 
 Trestian Stewart
 [email me](trestian.stewart@gmail.com)
@@ -150,3 +186,4 @@ Trestian Stewart
 * [SonarQube Scan Action](https://github.com/SonarSource/sonarqube-scan-action)
 * [Python Generate test Reports](https://github.com/SonarSource/sonar-scanning-examples/tree/master/sonar-scanner/src/python)
 * [Argocd External Authentication](https://medium.com/pickme-engineering-blog/how-to-connect-an-external-kubernetes-cluster-to-argo-cd-using-bearer-token-authentication-d9ab093f081d)
+* [Kind Configuration](https://iamunnip.medium.com/kind-local-kubernetes-cluster-part-5-25844d448926)
