@@ -28,6 +28,10 @@ The pipeline includes provisions for SonarQube static code analysis (currently d
 ## Post-Deployment
 The pipeline includes steps for simulating E2E testing by calling the application API verifying the returned information is accurate as well as a step for simulating Dynamic Application Securty Testing (DAST) with Rapid7.
 
+The application is deployed to the k8s environment using its rolling deployment feature but in order to further improve stakeholder confidence and reduce risk in deploying new versions of the application we can roll out the application either using blue-green or canary deployment strategy. This would require use to use a service mesh like Istio be added to the production cluster to provide those traffic management capabilities. We would also need to modify the template folder and to accomodate the additional manifests like Gateway, Virtual Serivce and Destination Rules.
+
+This functionality is outside the scope of the requirements but I wanted to highlight it as part of a strategy that can be added to a CICD pipeline. 
+
 ## Infrastructure Limitations
 
 This implementation uses local Kind clusters with manual infrastructure provisioning via Helm charts. A production-ready continuous infrastructure deployment would require:
