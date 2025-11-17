@@ -79,21 +79,30 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 200m
+    memory: 228Mi
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 200m
+    memory: 228Mi
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
   httpGet:
     path: /api/v1/healthz
-    port: http
+    port: 5000
+  initialDelaySeconds: 600    # Wait 10 min
+  periodSeconds: 30           # Check every 30 seconds
+  timeoutSeconds: 10          # 10 second timeout per check
+  failureThreshold: 10        # Allow 10 failures (5 minutes total)
+    
 readinessProbe:
   httpGet:
     path: /api/v1/healthz
-    port: http
+    port: 5000
+  initialDelaySeconds: 600    # Wait 10 min
+  periodSeconds: 60           # Check every 30 seconds
+  timeoutSeconds: 15          # 10 second timeout per check
+  failureThreshold: 5        # Allow 10 failures (5 minutes total)
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
