@@ -19,7 +19,9 @@ The CI/CD pipeline implements environment-specific deployment workflows:
 
 ArgoCD is deployed independently on each cluster using Helm charts with environment-specific value files located in `charts/argocd/`. This approach was selected over a centralized ArgoCD instance due to networking limitations inherent in Kind's Docker-based cluster implementation, particularly when running on Windows with WSL2.
 
-The `kind/ArgoExternalAuth` directory contains the attempted configuration for external cluster management, which was abandoned due to cross-cluster connectivity constraints.
+Accessing the clusters from my host machine worked well but the argocd server running inside the cluster in the container was not able to access the destination cluster. These IP address were not routable from inside the docker containers. In an enterprise environment this an easy set up as the IP address of the cluster used in the kubeconfig file is accessible when you attempt to add an external cluster in argocd.
+
+I wanted to connect the second cluster to ArgoCD to demonstrate ApplicationSets' multi-cluster deployment capabilities, which allow deploying applications across multiple environments simultaneously using a single configuration instead of individual Application manifests per environment/
 
 ## Quality Assurance
 

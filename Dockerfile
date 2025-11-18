@@ -16,8 +16,6 @@ RUN coverage run -m unittest discover -s tests/ && \
     coverage xml -o coverage-report/coverage-python.xml && \
     python -m xmlrunner discover -s tests/ -o coverage-report/execution-python.xml
 
-CMD [ "tail", "-f", "/dev/null" ]
-
 # Production stage
 FROM python:3.10-alpine AS production
 

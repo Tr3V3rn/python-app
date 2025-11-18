@@ -90,19 +90,12 @@ livenessProbe:
   httpGet:
     path: /api/v1/healthz
     port: 5000
-  initialDelaySeconds: 600    # Wait 10 min
-  periodSeconds: 30           # Check every 30 seconds
-  timeoutSeconds: 10          # 10 second timeout per check
-  failureThreshold: 10        # Allow 10 failures (5 minutes total)
     
 readinessProbe:
   httpGet:
     path: /api/v1/healthz
     port: 5000
-  initialDelaySeconds: 600    # Wait 10 min
-  periodSeconds: 60           # Check every 30 seconds
-  timeoutSeconds: 15          # 10 second timeout per check
-  failureThreshold: 5        # Allow 10 failures (5 minutes total)
+
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
