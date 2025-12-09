@@ -157,6 +157,7 @@ create secret with name DOCKERHUB_USERNAME, add your docker hub username
 create secret with name DOCKERHUB_TOKEN, add your docker hub token
 ```
 Verify the secrets are created in the repo
+
 ![Repository Secrets](./.images/githubsecrets.png)
 
 ### Accessing the application

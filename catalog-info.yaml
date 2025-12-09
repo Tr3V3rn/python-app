@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: python-app
+  description: A python app I used for my jamf interview.
+  annotations:
+    github.com/project-slug: Tr3V3rn/python-app
+spec:
+  type: service
+  owner: development
+  lifecycle: experimental
